@@ -24,5 +24,8 @@ int create_system_server()
 
     printf("여기서 시스템 프로세스를 생성합니다.\n");
 
+    if(!(systemPid = fork()))
+        system_server();
+
     return 0;
 }
