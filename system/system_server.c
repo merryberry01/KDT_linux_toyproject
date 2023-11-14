@@ -24,8 +24,19 @@ int create_system_server()
 
     printf("여기서 시스템 프로세스를 생성합니다.\n");
 
-    if(!(systemPid = fork()))
+    /* fork 를 이용하세요 */
+    switch (systemPid = fork()) {
+    case -1:
+        printf("fork failed\n");
+    case 0:
+        /* 프로세스 이름 변경 */
+        if (prctl(PR_SET_NAME, (unsigned long) name) < 0)
+            perror("prctl()");
         system_server();
+        break;
+    default:
+        break;
+    }
 
     return 0;
 }
