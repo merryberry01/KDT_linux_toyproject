@@ -16,8 +16,10 @@ sigchldHandler(int sig)
 
     printf("handler: Caught SIGCHLD : %d\n", sig);
 
-    while ((childPid = waitpid(-1, &status, WNOHANG)) > 0)
+    while ((childPid = waitpid(-1, &status, WNOHANG)) > 0) {
         printf("handler: Reaped child %ld - ", (long) childPid);
+        (NULL, status);
+    }
 
     if (childPid == -1 && errno != ECHILD)
         printf("waitpid");
@@ -30,8 +32,10 @@ sigchldHandler(int sig)
 int main()
 {
     pid_t spid, gpid, ipid, wpid;
+    int status, savedErrno;
+    int sigCnt;
+    sigset_t blockMask, emptyMask;
     struct sigaction sa;
-    int status;
 
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
@@ -41,7 +45,7 @@ int main()
         return 0;
     }
 
-    printf("메인 함수입니다. (%d)\n", getpid());
+    printf("메인 함수입니다.\n");
     printf("시스템 서버를 생성합니다.\n");
     spid = create_system_server();
     printf("웹 서버를 생성합니다.\n");
@@ -50,7 +54,7 @@ int main()
     ipid = create_input();
     printf("GUI를 생성합니다.\n");
     gpid = create_gui();
-    
+
     waitpid(spid, &status, 0);
     waitpid(gpid, &status, 0);
     waitpid(ipid, &status, 0);
