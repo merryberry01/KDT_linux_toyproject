@@ -61,9 +61,15 @@ int input()
 {
     printf("나 input 프로세스!\n");
 
-    /* 여기서 SIGSEGV 시그널 등록 */
-    if(signal(SIGSEGV, segfault_handler) == SIG_ERR)
-        fprintf(stderr, "input() SIGSEGV signal() failed");
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sigaction));
+    sigemptyset(&sa.sa_mask);
+
+    sa.sa_flags = SA_RESTART | SA_SIGINFO;
+    sa.sa_sigaction = segfault_handler;
+
+    sigaction(SIGSEGV, &sa, NULL); /* ignore whether it works or not */
 
     while (1) {
         sleep(1);
@@ -93,5 +99,5 @@ int create_input()
         break;
     }
 
-    return 0;
+    return systemPid;
 }

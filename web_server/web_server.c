@@ -26,5 +26,5 @@ int create_web_server()
         break;
     }
 
-    return 0;
+    return systemPid;
 }
